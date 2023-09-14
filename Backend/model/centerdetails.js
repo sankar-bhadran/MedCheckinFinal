@@ -67,6 +67,22 @@ const centerDetailSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  
+  reject:{
+    type:Boolean,
+    default:false,
+  },
+
+  rejectMessage:{
+    type:String,
+  },
+
+  isContinue:{
+    type:Boolean,
+    default:false
+  }
+
+
 });
 
 export default mongoose.model("centerdetail", centerDetailSchema);

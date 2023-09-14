@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import TextField from "@mui/material/TextField";
 
-const Scancertificate = ({state, setState}) => {
+const Scancertificate = ({ state, setState }) => {
   const fileInputRef4 = React.useRef(null);
   const fileInputRef5 = React.useRef(null);
   const fileInputRef6 = React.useRef(null);
@@ -20,6 +20,7 @@ const Scancertificate = ({state, setState}) => {
     const file = event.target.files[0];
     console.log(file);
     setState((prev) => ({ ...prev, [event.target.name]: file }));
+    console.log(state)
   };
 
   return (
@@ -88,6 +89,7 @@ const Scancertificate = ({state, setState}) => {
                       <Paper
                         variant="outlined"
                         square
+                        onClick={() => fileInputRef4.current.click()}
                         sx={{
                           display: "flex",
                           alignItems: "center",
@@ -99,10 +101,14 @@ const Scancertificate = ({state, setState}) => {
                           padding: "16px",
                         }}
                       >
-                        {state?.NABH ? (
+                        {state?.NABH || state.CertificateImages ? (
                           <img
                             style={{ width: 240, height: 240, padding: 22 }}
-                            src={URL.createObjectURL(state.NABH)}
+                            src={
+                              typeof state.NABH == "object"
+                                ? URL.createObjectURL(state.NABH)
+                                : `http://localhost:5000/images/${state?.CertificateImages?.[0]?.NABH}`
+                            }
                           />
                         ) : (
                           <Typography
@@ -146,6 +152,7 @@ const Scancertificate = ({state, setState}) => {
                       <Paper
                         variant="outlined"
                         square
+                        onClick={() => fileInputRef5.current.click()}
                         sx={{
                           display: "flex",
                           alignItems: "center",
@@ -157,11 +164,13 @@ const Scancertificate = ({state, setState}) => {
                           padding: "16px",
                         }}
                       >
-                        {state?.ISO ? (
+                        {state?.ISO || state.CertificateImages ? (
                           <img
-                          onClick={() => fileInputRef5.current.click()}
+                            onClick={() => fileInputRef5.current.click()}
                             style={{ width: 240, height: 240, padding: 22 }}
-                            src={URL.createObjectURL(state.ISO)}
+                            src={ typeof state.ISO == "object"
+                            ? URL.createObjectURL(state.ISO)
+                            : `http://localhost:5000/images/${state?.CertificateImages?.[2]?.ISO}`}
                           />
                         ) : (
                           <Typography
@@ -205,6 +214,7 @@ const Scancertificate = ({state, setState}) => {
                       <Paper
                         variant="outlined"
                         square
+                        onClick={() => fileInputRef6.current.click()}
                         sx={{
                           display: "flex",
                           alignItems: "center",
@@ -216,10 +226,12 @@ const Scancertificate = ({state, setState}) => {
                           padding: "16px",
                         }}
                       >
-                        {state?.NABL ? (
+                        {state?.NABL || state.CertificateImages ? (
                           <img
                             style={{ width: 240, height: 240, padding: 22 }}
-                            src={URL.createObjectURL(state.NABL)}
+                            src={ typeof state.NABL == "object"
+                            ? URL.createObjectURL(state.NABL)
+                            : `http://localhost:5000/images/${state?.CertificateImages?.[1]?.NABL}`}
                           />
                         ) : (
                           <Typography

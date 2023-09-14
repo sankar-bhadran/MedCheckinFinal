@@ -18,9 +18,11 @@ const Scanregistration = () => {
   console.log("centerData", centerData);
   console.log(centerData?.isSubmitted);
   console.log(centerData?.isVerified);
+  console.log("reject", centerData?.isreject);
+  console.log("isContinue", centerData?.isContinue);
 
   useEffect(() => {
-    dispatch(getScanDetails(user._id));
+    dispatch(getScanDetails());
   }, []);
 
   return (
@@ -31,10 +33,16 @@ const Scanregistration = () => {
           sx={{ bgcolor: "#cfe8fc" }}
           style={{ padding: "30px 30px 30px 30px" }}
         >
-          {centerData?.isVerified && centerData?.isSubmitted ? (
+          {centerData?.isContinue ? (
             <Tabs />
           ) : centerData?.isSubmitted ? (
-            <RegistrationCompletePage />
+            <RegistrationCompletePage
+              data={{
+                isReject: centerData?.isreject,
+                message: centerData?.message,
+                verified: centerData?.isVerified,
+              }}
+            />
           ) : (
             <Steppercomponent />
           )}

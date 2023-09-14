@@ -83,7 +83,7 @@ export default function StickyHeadTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {centerData ? (
+            {centerData && Array.isArray(centerData) ? (
               centerData
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((data) => (

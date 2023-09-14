@@ -6,7 +6,7 @@ import twilio from "twilio";
 import nodemailer from "nodemailer";
 import Mailgen from "mailgen";
 const accountSid = "AC6ffd98d07b09c3795988fca455810836";
-const authToken = "86423a1b2724704df743b2af8d79a589";
+const authToken = "78b60ac511da98d315f34cebde63a45f";
 const servicessid = "VA6a2a14ec6072a70983306c795d3c2737";
 const client = twilio(accountSid, authToken);
 
@@ -22,18 +22,17 @@ export const sendotp = async (req, res) => {
     user = await User.findOne({
       $or: [{ email: email }, { phonenumber: phonenumber }],
     });
-
     if (user) {
       return res
         .status(400)
         .json({ message: "User already exist!Login instead" });
     } else {
       console.log("else case");
-      const otpResponse = "1234";
-      // const otpResponse = await client.verify.v2
-      //   .services(servicessid)
-      //   .verifications.create({ to: `+91${phonenumber}`, channel: "sms" });
-      // console.log(otpResponse);
+      // const otpResponse = "1234";
+      const otpResponse = await client.verify.v2
+        .services(servicessid)
+        .verifications.create({ to: `+91${phonenumber}`, channel: "sms" });
+      console.log(otpResponse);
       res.status(200).send(`OTP successful: ${JSON.stringify(otpResponse)}`);
     }
   } catch (error) {
@@ -66,14 +65,14 @@ export const verifyotp = async (req, res, next) => {
   const { otp, phonenumber } = req.body;
 
   try {
-    const verifiedResponse = {};
-    verifiedResponse.status = otp === "1234" ? "approved" : "";
-    // const verifiedResponse = await client.verify.v2
-    //   .services(servicessid)
-    //   .verificationChecks.create({
-    //     to: `+91${phonenumber}`,
-    //     code: otp,
-    //   });
+    // const verifiedResponse = {};
+    // verifiedResponse.status = otp === "1234" ? "approved" : "";
+    const verifiedResponse = await client.verify.v2
+      .services(servicessid)
+      .verificationChecks.create({
+        to: `+91${phonenumber}`,
+        code: otp,
+      });
     if (verifiedResponse.status === "approved") {
       next();
     } else {

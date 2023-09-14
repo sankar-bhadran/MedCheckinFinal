@@ -77,6 +77,7 @@ const Scanphoto = ({ state, setState }) => {
                       <Paper
                         variant="outlined"
                         square
+                        onClick={() => fileInputRef1.current.click()}
                         sx={{
                           display: "flex",
                           alignItems: "center",
@@ -88,10 +89,14 @@ const Scanphoto = ({ state, setState }) => {
                           padding: "16px",
                         }}
                       >
-                        {state?.image1 ? (
+                        {state?.image1 || state.CenterImages ? (
                           <img
                             style={{ width: 240, height: 240, padding: 22 }}
-                            src={URL.createObjectURL(state.image1)}
+                            src={
+                              typeof state.image1 == "object"
+                                ? URL.createObjectURL(state.image1)
+                                : `http://localhost:5000/images/${state.CenterImages[0]}`
+                            }
                           />
                         ) : (
                           <Typography
@@ -133,6 +138,7 @@ const Scanphoto = ({ state, setState }) => {
                       <Paper
                         variant="outlined"
                         square
+                        onClick={() => fileInputRef2.current.click()}
                         sx={{
                           display: "flex",
                           alignItems: "center",
@@ -144,10 +150,14 @@ const Scanphoto = ({ state, setState }) => {
                           padding: "16px",
                         }}
                       >
-                        {state?.image2 ? (
+                        {state?.image2 || state.CenterImages ? (
                           <img
                             style={{ width: 240, height: 240, padding: 22 }}
-                            src={URL.createObjectURL(state.image2)}
+                            src={
+                              typeof state.image2 == "object"
+                                ? URL.createObjectURL(state.image2)
+                                : `http://localhost:5000/images/${state.CenterImages[1]}`
+                            }
                           />
                         ) : (
                           <Typography
@@ -186,9 +196,10 @@ const Scanphoto = ({ state, setState }) => {
                         },
                       }}
                     >
-                       <Paper
+                      <Paper
                         variant="outlined"
                         square
+                        onClick={() => fileInputRef3.current.click()}
                         sx={{
                           display: "flex",
                           alignItems: "center",
@@ -200,10 +211,14 @@ const Scanphoto = ({ state, setState }) => {
                           padding: "16px",
                         }}
                       >
-                        {state?.image3 ? (
+                        {state?.image3 || state.CenterImages ? (
                           <img
                             style={{ width: 240, height: 240, padding: 22 }}
-                            src={URL.createObjectURL(state.image3)}
+                            src={
+                              typeof state.image3 == "object"
+                                ? URL.createObjectURL(state.image3)
+                                : `http://localhost:5000/images/${state.CenterImages[2]}`
+                            }
                           />
                         ) : (
                           <Typography

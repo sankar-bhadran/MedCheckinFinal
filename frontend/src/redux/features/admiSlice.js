@@ -5,6 +5,7 @@ const initialState = {
   loading: false,
   adminsStatus: false,
   adminActionStatus: false,
+  viewdetails:false,
   Data: null,
   messageStatus: true,
   error: "",
@@ -196,6 +197,19 @@ export const getSubCategory = createAsyncThunk(
   }
 );
 
+export const centerreject=createAsyncThunk('admin/centerreject',async(data,{rejectWithValue})=>{
+  console.log("data",data)
+  try {
+    const response=await axios.patch('admin/centerreject',data)
+    return response.data
+  } catch (error) {
+    return rejectWithValue(error.response.data)
+  }
+})
+
+
+
+
 export const adminlogout = createAsyncThunk(
   "admin/logout",
   async (_, { rejectWithValue }) => {
@@ -368,8 +382,8 @@ const adminslice = createSlice({
       })
 
       .addCase(getCenterDetails.fulfilled, (state, action) => {
-        state.adminActionStatus = true;
         state.Data = action.payload.centerDetails;
+      
       })
 
       .addCase(getCenterDetails.rejected, (state, action) => {
@@ -382,6 +396,7 @@ const adminslice = createSlice({
 
       .addCase(centerapproval.fulfilled, (state, action) => {
         state.messageStatus = true;
+        state.adminActionStatus = !state.adminActionStatus;
         state.successMessages = action.payload.message;
         console.log(action.payload.message);
       })
@@ -401,7 +416,20 @@ const adminslice = createSlice({
 
       .addCase(getSubCategory.rejected, (state, action) => {
         state.error = action.error.message || " ";
-      });
+      })
+
+      .addCase(centerreject.pending,(state,action)=>{
+        state.loading=false
+      })
+
+      .addCase(centerreject.fulfilled,(state,action)=>{
+        state.adminActionStatus=!state.adminActionStatus
+      })
+
+      .addCase(centerreject.rejected,(state,action)=>{
+        state.error=action.error.message || " "
+      })
+
   },
 });
 

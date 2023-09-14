@@ -79,7 +79,7 @@ export default function StickyHeadTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {ownersdata ? (
+            {ownersdata && Array.isArray(ownersdata) ? (
               ownersdata
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((data) => (

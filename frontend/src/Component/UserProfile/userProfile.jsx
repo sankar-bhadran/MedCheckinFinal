@@ -24,7 +24,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import PhoneIcon from "@mui/icons-material/Phone";
 import InputAdornment from "@mui/material/InputAdornment";
 import { useDispatch, useSelector } from "react-redux";
-import { getuser ,addressDelete} from "../../redux/features/userSlice";
+import { getuser, addressDelete } from "../../redux/features/userSlice";
 import { updateProfile } from "../../redux/features/userSlice";
 import Addaddress from "../AddAddress/Addaddress";
 
@@ -78,7 +78,7 @@ const UserProfile = () => {
   };
 
   const handleButtonClick = (data) => {
-    dispatch(addressDelete(data))
+    dispatch(addressDelete(data));
   };
 
   return (
@@ -251,6 +251,11 @@ const UserProfile = () => {
                             >
                               {address.house}
                               <br />
+                              {address.area}
+                              <br />
+                              {address.city},{address.state}
+                              <br/>
+                              {address.pincode}
                             </Typography>
                             <Stack
                               direction={"row"}
@@ -259,9 +264,7 @@ const UserProfile = () => {
                               marginLeft={"10px"}
                             >
                               <Button
-                                onClick={() =>
-                                  handleButtonClick(address?._id)
-                                }
+                                onClick={() => handleButtonClick(address?._id)}
                               >
                                 DELETE
                               </Button>

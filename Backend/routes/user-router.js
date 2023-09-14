@@ -12,6 +12,7 @@ import {
   deleteAddress,
 } from "../controllers/user-controller.js";
 import { verifyToken } from "../middleware/authMiddleware.js";
+import { blockUser } from "../middleware/blockUserMiddleware.js";
 import { login } from "../controllers/user-controller.js";
 
 const userRouter = express.Router();

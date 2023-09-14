@@ -4,6 +4,7 @@ import {
   adminlogin,
   approval,
   availableCategory,
+  centerreject,
   getCenterDetails,
   getSub,
   logout,
@@ -27,6 +28,7 @@ adminRouter.patch("/blockowner", verifyToken, ownerAccess);
 adminRouter.get('/viewdetails/:centerid',verifyToken,getCenterDetails)
 adminRouter.get('/getCategory/:categoryid',verifyToken,getSub)
 adminRouter.patch('/centerapprove',verifyToken,approval);
+adminRouter.patch('/centerreject',verifyToken,centerreject)
 adminRouter.get("/adminpanel", verifyToken, logout);
 
 export default adminRouter;

@@ -3,7 +3,8 @@ import Category from "../model/categoryModel.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import centerdetails from "../model/centerdetails.js";
-
+import nodemailer from "nodemailer";
+import Mailgen from "mailgen";
 export const adminlogin = async (req, res) => {
   const { email, password } = req.body;
   let admin;
@@ -198,16 +199,141 @@ export const approval = async (req, res) => {
   const { data } = req.body;
   console.log("req.body", req.body);
   try {
-    const centerdetail = await centerdetails.findById({ _id: data });
+    const centerdetail = await centerdetails
+      .findById({ _id: data })
+      .populate("owner");
+    console.log("email", centerdetail.owner.email);
     if (!centerdetail) {
       return res.status(404).json({ message: "Center not found" });
     }
-
     centerdetail.isVerified = true;
     await centerdetail.save();
+    if (centerdetail.isVerified) {
+      let currentDate = new Date();
+      let formattedDate = currentDate.toDateString();
+      let transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_ID,
+          pass: process.env.PASSWORD,
+        },
+      });
+
+      let MailGenerator = new Mailgen({
+        theme: "default",
+        product: {
+          name: "MedCheckIn",
+          link: "https://mailgen.js/",
+        },
+      });
+
+      let response = {
+        body: {
+          name: `${centerdetail.owner.username}`,
+          intro: [
+            `We are delighted to inform you that your registration has been approved on ${formattedDate}. Welcome to MedCheckin, and thank you for choosing to be a part of our community.`,
+          ],
+          outro: [
+            "Need help, or have questions?",
+            "Just reply to this email, we'd love to help.",
+          ],
+        },
+      };
+
+      let mail = MailGenerator.generate(response);
+
+      let mailOptions = {
+        from: '"Medcheckin" <brocamptvm@gmail.com>',
+        to: centerdetail.owner.email,
+        subject: "verification Mail!",
+        html: mail,
+      };
+
+      transporter.sendMail(mailOptions, function (err, data) {
+        if (err) {
+          console.log("error sending email", err);
+          return res.status(400).json({ message: "error sending email" }, err);
+        } else {
+          res.status(200).json({ message: "email sent successfully" });
+          console.log("email sent successfully");
+        }
+      });
+    }
     return res
       .status(200)
       .json({ message: "Approved successfully", centerdetail });
+  } catch (error) {
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const centerreject = async (req, res) => {
+  const { rejectreason, id } = req.body;
+  console.log("req.body", rejectreason);
+  try {
+      await centerdetails
+      .findOneAndUpdate(
+        { _id: id },
+        { $set: { reject: true, rejectMessage: rejectreason } }
+      )
+      
+    const details=await centerdetails.findById({_id:id}).populate("owner");
+    console.log("dsfsfsdkajhaskdjh", details);
+    console.log("message",details.rejectMessage)
+    if (details.reject) {
+      let currentDate = new Date();
+      let formattedDate = currentDate.toDateString();
+      let transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_ID,
+          pass: process.env.PASSWORD,
+        },
+      });
+
+      let MailGenerator = new Mailgen({
+        theme: "default",
+        product: {
+          name: "MedCheckIn",
+          link: "https://mailgen.js/",
+        },
+      });
+
+      let response = {
+        body: {
+          name: `${details.owner.username}`,
+          intro: [
+            `We appreciate your interest in joining MedCheckin. After careful consideration, we regret to inform you that your registration, which was scheduled for ${formattedDate}, has been declined due to ${details.rejectMessage}`,
+          ],
+          outro: [
+            "Need help, or have questions?",
+            "Just reply to this email, we'd love to help.",
+          ],
+        },
+      };
+
+      let mail = MailGenerator.generate(response);
+
+      let mailOptions = {
+        from: '"Medcheckin" <brocamptvm@gmail.com>',
+        to: details.owner.email,
+        subject: "verification Mail!",
+        html: mail,
+      };
+
+      transporter.sendMail(mailOptions, function (err, data) {
+        if (err) {
+          console.log("error sending email", err);
+          return res.status(400).json({ message: "error sending email" }, err);
+        } else {
+          res.status(200).json({ message: "email sent successfully" });
+          console.log("email sent successfully");
+        }
+      });
+    }
+    return res
+      .status(200)
+      .json({ message: "Reject successfully", details });
   } catch (error) {
     return res.status(500).json({ message: "Internal server error" });
   }

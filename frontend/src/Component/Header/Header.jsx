@@ -13,7 +13,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/features/userSlice";
 
 export default function ButtonAppBar({ aboutus, login, namenav }) {
+  const navigate = useNavigate();
   const userdata = useSelector((state) => state.user.actionStatus);
   const dispatch = useDispatch();
   const pathname = useLocation().pathname;

@@ -7,7 +7,7 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import { Button, Chip, Divider, Stack, Typography } from "@mui/material";
+import { Button, Divider, Stack, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import AddIcon from "@mui/icons-material/Add";
 import TextField from "@mui/material/TextField";
@@ -16,23 +16,41 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useForm } from "react-hook-form";
 import Autocomplete from "@mui/material/Autocomplete";
 import { useDispatch, useSelector } from "react-redux";
-import { getScanCategories } from "../../../redux/features/CenterSlice";
+import { getScanCategories,addScan } from "../../../redux/features/CenterSlice";
 import { useEffect, useState } from "react";
 
 export default function AddScan() {
   const dispatch = useDispatch();
-  const scanCategories = useSelector((state) => state.center);
-  console.log("scanCategories", scanCategories);
-  const [data, setData] = useState([]);
+  const scanCategories = useSelector((state) => state.center.CommonData);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
+
+  const [selectedValue, setSelectedValue] = useState(null);
+  const [subValue, setSubValue] = useState([]);
+  const [selectedSubCategories, setSelectedSubCategories] = useState(null);
+  const [details, setDetails] = useState(null);
+  const [price, setPrice] = useState(null);
+
+  const handleMainCategorySelect = (event, selectedCategory) => {
+    setSelectedValue(selectedCategory);
+    const selectedSubcategories =
+      scanCategories.find((category) => category.Testname === selectedCategory)
+        ?.sub.name || [];
+
+    setSubValue(selectedSubcategories);
+  };
+
+  console.log("selectevalue", selectedValue);
+  console.log("subValue", subValue);
+  console.log("selectedsubcat", selectedSubCategories);
+  console.log("details", details);
+  console.log("price", price);
 
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(+event.target.value);
@@ -41,6 +59,7 @@ export default function AddScan() {
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
+    dispatch(getScanCategories());
     setOpen(true);
   };
 
@@ -48,42 +67,26 @@ export default function AddScan() {
     setOpen(false);
   };
 
-  const { register, handleSubmit } = useForm();
-
-  const onSubmit = (data) => {
-    console.log("data", data);
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("selectedValue:", selectedValue);
+    console.log("selectedSubCategories:", selectedSubCategories);
+    console.log("details:", details);
+    console.log("price:", price);
+    const formData = {
+      mainCategory: selectedValue,
+      subCategory: selectedSubCategories,
+      testDetails: details,
+      price: price,
+    };
     handleClose();
+    console.log("formdata", formData);
+    dispatch(addScan(formData))
   };
 
-  useEffect(() => {
-    dispatch(getScanCategories());
-  },[]);
+  
 
-  const top100Films = [
-    "Assamese",
-    "Bengali",
-    "Bodo",
-    "Dogri",
-    "English",
-    "Gujarati",
-    "Hindi",
-    "Kannada",
-    "Kashmiri",
-    "Konkani",
-    "Maithili",
-    "Malayalam",
-    "Marathi",
-    "Meitei",
-    "Nepali",
-    "Odia",
-    "Punjabi",
-    "Sanskrit",
-    "Santali",
-    "Sindhi",
-    "Tamil",
-    "Telugu",
-    "Urdu",
-  ];
+
 
   return (
     <Paper
@@ -128,6 +131,9 @@ export default function AddScan() {
                 Category
               </TableCell>
               <TableCell align="left" style={{ minWidth: "100px" }}>
+                Sub-Category
+              </TableCell>
+              <TableCell align="left" style={{ minWidth: "100px" }}>
                 Price
               </TableCell>
             </TableRow>
@@ -136,6 +142,7 @@ export default function AddScan() {
             <TableRow hover role="checkbox" tabIndex={-1}>
               <TableCell align="left"> </TableCell>
               <TableCell align="left"></TableCell>
+              <TableCell></TableCell>
               <TableCell></TableCell>
             </TableRow>
 
@@ -156,23 +163,37 @@ export default function AddScan() {
       />
       <Dialog open={open}>
         <DialogTitle>ADD SCAN AND MRI</DialogTitle>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit}>
           <DialogContent>
             {/* <DialogContentText>Test Categories</DialogContentText> */}
             <Stack spacing={3} sx={{ width: 500 }}>
+              {scanCategories && (
+                <Autocomplete
+                  disablePortal
+                  id="combo-box-category"
+                  options={
+                    scanCategories
+                      ? scanCategories.map((category) => category.Testname)
+                      : []
+                  }
+                  getOptionLabel={(option) => option}
+                  value={selectedValue}
+                  onChange={handleMainCategorySelect}
+                  sx={{ width: 500 }}
+                  renderInput={(params) => (
+                    <TextField {...params} label="Select Category" />
+                  )}
+                />
+              )}
               <Autocomplete
                 disablePortal
                 id="combo-box-demo"
-                options={top100Films}
-                sx={{ width: 500 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Select Category" />
-                )}
-              />
-              <Autocomplete
-                disablePortal
-                id="combo-box-demo"
-                options={top100Films}
+                options={subValue}
+                getOptionLabel={(option) => option}
+                onChange={(event, newvalue) => {
+                  setSelectedSubCategories(newvalue);
+                }}
+                value={selectedSubCategories}
                 sx={{ width: 500 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Sub Categroy" />
@@ -182,26 +203,18 @@ export default function AddScan() {
               <TextField
                 placeholder="Enter Details"
                 multiline
+                onChange={(event) => setDetails(event.target.value)}
                 rows={2}
                 maxRows={4}
               />
               <TextField
                 id="outlined-password-input"
                 label="Price"
+                onChange={(event) => setPrice(event.target.value)}
                 type="number"
                 autoComplete="current-password"
               />
             </Stack>
-
-            {/* <TextField
-              {...register("TestName")}
-              margin="dense"
-              id="name"
-              label="TestName"
-              type="name"
-              variant="standard"
-              sx={{ width: "500px" }}
-            /> */}
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>

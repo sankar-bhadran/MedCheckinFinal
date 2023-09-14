@@ -18,24 +18,28 @@ import Centerdetailpage from "./Pages/AdminPages/CenterDetail/Centerdetailpage";
 import Dashboard from "./Component/AdminsComponents/AdminDashboard/Dashboard";
 import Centerhomepage from "./Pages/Centers/HomePage/CenterHomePage";
 import Adminauth from "./Component/AdminsComponents/AdminAuth/Adminauth";
+import AuthComponent from "./Component/AuthComponent/AuthComponent";
 import Labregistration from "./Pages/Centers/LabRegistration/Labregistration";
 import Scanregistration from "./Pages/Centers/ScanRegistration/Scanregistration";
+import Reapply from './Pages/Centers/Stepper/Stepper'
+ 
 function App() {
   return (
     <div className="App">
       <Routes>
-        <Route path="/" element={<Userhome />} />
         <Route path="/login" element={<UserLogin />} />
         <Route path="/signup" element={<Usersignup />} />
+
+        <Route path="/" element={<Userhome />} />
         <Route path="/signup" element={<Usersignup />} />
-        <Route path="/verifyotp" element={<Otppage />} />
         <Route path="/forgotpassword" element={<ForgotPassword />} />
         <Route path="/resetpassword" element={<ResetPassword />} />
         <Route path="/userprofile" element={<UserprofilePage />} />
-
         <Route path="/centerhomepage" element={<Centerhomepage />} />
         <Route path="/labregister" element={<Labregistration />} />
         <Route path="/scanregister" element={<Scanregistration />} />
+        <Route path="/reapply" element={<Reapply />} />
+        <Route path="/verifyotp" element={<Otppage />} />
 
         <Route path="/adminlogin" element={<Adminlogin />} />
         <Route element={<Adminauth />}>

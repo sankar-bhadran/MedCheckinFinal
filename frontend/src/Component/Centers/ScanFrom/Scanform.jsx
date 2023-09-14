@@ -135,7 +135,7 @@ const Scanform = ({ state, setState }) => {
                     <TextField
                       id="outlined-basic"
                       onChange={handleChange}
-                      value={state.Landmark}
+                      value={state.LandMark}
                       name="LandMark"
                       label="Landmark"
                       variant="outlined"

@@ -126,7 +126,7 @@ export default function StickyHeadTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {categorydata ? (
+            {categorydata && Array.isArray(categorydata)  ? (
               categorydata
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((data) => (

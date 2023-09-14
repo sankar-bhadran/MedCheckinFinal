@@ -14,7 +14,21 @@ export const getScanDetails = createAsyncThunk(
   "center/scandetails",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`center/scanregister/${id}`);
+      const response = await axios.get('center/scanregister');
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const addScan = createAsyncThunk(
+  "centre/addscan",
+  async (data, { rejectWithValue }) => {
+    console.log(data)
+    try {
+      const response = await axios.post("center/addscan",data);
       console.log(response.data);
       return response.data;
     } catch (error) {
@@ -36,6 +50,27 @@ export const getScanCategories = createAsyncThunk(
   }
 );
 
+export const getContinue=createAsyncThunk('center/continuebutton',async(_,{rejectWithValue})=>{
+  console.log("sadkjanskdl")
+  try {
+    const response =await axios.patch('center/onetimeapprovel');
+    console.log("response",response)
+    return response.data
+  } catch (error) {
+   return rejectWithValue(error.response.data)    
+  }
+})
+
+export const reApply=createAsyncThunk('center/reapply',async(data,{rejectWithValue})=>{
+  try {
+    const response=await axios.patch('center/reapply',data);
+    console.log("response",response)
+    return response.data
+  } catch (error) {
+    return rejectWithValue(error.response.data)
+  }
+})
+
 const centerSlice = createSlice({
   initialState,
   name: "center",
@@ -44,8 +79,8 @@ const centerSlice = createSlice({
     builder
       .addCase(getScanDetails.pending, (state, action) => {
         state.loading = true;
+        state.Centerdata=null
       })
-
       .addCase(getScanDetails.fulfilled, (state, action) => {
         state.CenterStatus = true;
         state.Centerdata = action.payload.dataToSend;
@@ -62,15 +97,48 @@ const centerSlice = createSlice({
 
       .addCase(getScanCategories.fulfilled, (state, action) => {
         state.CenterStatus = true;
-        state.Centerdata = {
-          ...state.Centerdata,
-          ...action.payload.scanCategories,
-        };
+        state.CommonData = action.payload.scanCategories;
       })
 
       .addCase(getScanCategories.rejected, (state, action) => {
         state.error = action.error.message || " ";
-      });
+      })
+
+      .addCase(addScan.pending, (state, action) => {
+        state.loading = true;
+      })
+
+      .addCase(addScan.fulfilled, (state, action) => {
+        state.CenterStatus = true;
+      })
+
+      .addCase(addScan.rejected, (state, action) => {
+        state.error = action.error.message || " ";
+      })
+
+      .addCase(getContinue.pending,(state,action)=>{
+        state.loading=true
+      })
+
+      .addCase(getContinue.fulfilled,(state,action)=>{
+        state.CenterStatus=true
+      })
+
+      .addCase(getContinue.rejected,(state,action)=>{
+        state.error=action.error.message || " "
+      })
+
+      .addCase(reApply.pending,(state,action)=>{
+        state.loading=true
+      })
+
+      .addCase(reApply.fulfilled,(state,action)=>{
+        state.CenterStatus=true
+      })
+
+      .addCase(reApply.rejected,(state,action)=>{
+        state.error=action.error.message || " "
+      })
   },
 });
 

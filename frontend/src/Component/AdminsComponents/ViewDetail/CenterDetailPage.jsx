@@ -11,20 +11,30 @@ import {
   Card,
   CardMedia,
 } from "@mui/material";
-
+import TextField from "@mui/material/TextField";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getCenterDetails,
   centerapproval,
+  centerreject,
 } from "../../../redux/features/admiSlice";
 import { ToastContainer, toast } from "react-toastify";
 
 const CenterDetailPage = () => {
+  const [open, setOpen] = React.useState(false);
   const data = useSelector((state) => state.admin);
+  console.log(data.adminActionStatus);
   const CenterData = useSelector((state) => state.admin.Data);
   console.log("CenterData", CenterData);
+  console.log("CenterData", CenterData?.isVerified);
   const dispatch = useDispatch();
   const { id } = useParams();
   console.log("id", id);
@@ -35,15 +45,32 @@ const CenterDetailPage = () => {
     dispatch(getCenterDetails(id));
   }, []);
 
+  useEffect(() => {
+    dispatch(getCenterDetails(id));
+  }, [data.adminActionStatus]);
+
   const handleButtonClick = (data) => {
     console.log(data);
     dispatch(centerapproval(data));
   };
 
-  // useEffect(() => {
-  //   data.messageStatus &&
-  //     toast.success("approvedddddd....!", { theme: "colored" });
-  // }, [data.messageStatus]);
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  
+  const { register, handleSubmit, reset } = useForm();
+
+  const onSubmit = (data) => {
+    console.log({ ...data, id });
+    dispatch(centerreject({ ...data, id }));
+    handleClose();
+    reset();
+  };
 
   return (
     <>
@@ -391,17 +418,75 @@ const CenterDetailPage = () => {
                   </Grid>
                 </Grid>
               </Stack>
-              <Button
-                variant="contained"
-                sx={{ margin: "20px" }}
-                onClick={() => handleButtonClick(id)}
-              >
-                Approve
-              </Button>
+              {CenterData?.isVerified ? (
+                <Button
+                  variant="contained"
+                  sx={{ margin: "20px" }}
+                  onClick={() => handleButtonClick(id)}
+                >
+                  Approved
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  sx={{ margin: "20px" }}
+                  onClick={() => handleButtonClick(id)}
+                >
+                  Approve
+                </Button>
+              )}
+              {CenterData?.reject ? (
+                <Button
+                  variant="contained"
+                  sx={{
+                    background: "#d32f2f",
+                    color: "white",
+                    "&:hover": {
+                      background: "#d32f2f",
+                    },
+                  }}
+                  onClick={handleClickOpen}
+                >
+                  Rejected
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  sx={{
+                    background: "#d32f2f",
+                    color: "white",
+                    "&:hover": {
+                      background: "#d32f2f",
+                    },
+                  }}
+                  onClick={handleClickOpen}
+                >
+                  Reject
+                </Button>
+              )}
             </Box>
           </Paper>
         </Container>
       </Grid>
+      <Dialog open={open} onClose={handleClose}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DialogTitle>Reason For Reject</DialogTitle>
+          <DialogContent>
+            <DialogContentText></DialogContentText>
+            <TextField
+              id="outlined-multiline-static"
+              multiline
+              {...register("rejectreason")}
+              label="Reason for Reject"
+              rows={4}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit">Submit</Button>
+          </DialogActions>
+        </form>
+      </Dialog>
     </>
   );
 };
